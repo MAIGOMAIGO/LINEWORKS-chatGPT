@@ -1,5 +1,4 @@
 # LINEWORKS × chatGPT
-
 ---
 
 ## 目次
@@ -23,7 +22,7 @@
 
 ## 概要
 
-LINEWORKSとchatGPTの連携を試してみた。
+LINEWORKSとchatGPTの連携を試してみた。  
 LINEWORKSのbotを利用してchatGPTをLINEWORKSで使えるようにした。
 
 ## 環境
@@ -58,7 +57,7 @@ test/
 
 ![シーケンスダイアグラム](images/lineworks_bot.drawio.png "シーケンスダイアグラム")
 
-Token節約のためGASによる翻訳作業がchatGPTの処理の前後にくる。
+Token節約のためGASによる翻訳作業がchatGPTの処理の前後にくる。  
 AccessTokenは24時間有効なのでどこかで保存しておけばわざわざ毎回処理する必要はないが、今回は特に気にしないのでそのまま入れた。
 
 ## 導入方法
@@ -74,7 +73,7 @@ AccessTokenは24時間有効なのでどこかで保存しておけばわざわ�
 
 まずはLINEWORKS Developer Consoleでアプリを作成します。
 
-LINEWORKS Developer Console
+LINEWORKS Developer Console  
 [https://developers.worksmobile.com/jp/console/openapi/v2/app/list/view](https://developers.worksmobile.com/jp/console/openapi/v2/app/list/view)
 
 ![LINEWORKS Developer Console](images/LINEdevcon.png "編集済みLINEWORKS")
@@ -83,7 +82,7 @@ LINEWORKS Developer Console
 アプリ名、アプリの説明は適当に記入。  
 RedirectURLは記入せず、OAuth Scopesにbot,bot.read,user.readを追加して保存する。
 
-できたらアプリを開きます。
+できたらアプリを開きます。  
 ![LINEWORKSアプリ](images/LINEapp.png "編集済みLINEapp")
 
 Service Accountの発行ボタンを押すとServiceAccountが発行されPrivate Keyが発行できるようになる。Private Keyを発行するとprivate_XXXXXXXXXXXXXX.keyがダウンロードされるのでなくさないように保管する。  
@@ -91,7 +90,7 @@ Service Accountの発行ボタンを押すとServiceAccountが発行されPrivat
 
 つぎにBotを用意します。
 
-LINEWORKS Developer Console の botページ
+LINEWORKS Developer Console の botページ  
 [https://developers.worksmobile.com/jp/console/bot/view](https://developers.worksmobile.com/jp/console/bot/view)
 
 ![LINEWORKSbot](images/LINEWORKSbot.png "編集済みsounan_bot画像")
@@ -100,26 +99,28 @@ LINEWORKS Developer Console の botページ
 
 ![bot](images/createBot.png "編集済みbot作成")
 
-bot名、説明は適当。API InterfaceはAPI2.0を選択。  
-CallbackはOn メッセージタイプはテキストだけ選択。  
-複数人のトークルームに招待可にチェックをつける。  
-管理者の主担当に自分を検索して追加する。  
+- bot名、説明は適当。API InterfaceはAPI2.0を選択。  
+- CallbackはOn メッセージタイプはテキストだけ選択。  
+- 複数人のトークルームに招待可にチェックをつける。  
+- 管理者の主担当に自分を検索して追加する。  
 全部できたら保存。  
+
 Bot IDは後で使います。
 
 つぎはLINEWORKSにbotを招待します。
 
 ![addBot](images/addBot.png "bot 追加")
 
-LINEWORKSの管理者画面で「サービス ＞ Bot」からBotを追加する。追加後は、Bot詳細から公開設定を行い、テナントユーザーが使えるようにする。
+LINEWORKSの管理者画面で「サービス ＞ Bot」からBotを追加する。  
+追加後は、Bot詳細から公開設定を行い、テナントユーザーが使えるようにする。
 
 ### GASの準備
 
 Token節約用のGoogle App Script(GAS)を作成します。
 
-Google App Script
-[https://script.google.com/home](https://script.google.com/home)
-開けなかったらこちらを参考に使えるようにしてください。
+Google App Script  
+[https://script.google.com/home](https://script.google.com/home)  
+開けなかったらこちらを参考に使えるようにしてください。  
 [https://note.com/koushikagawa/n/n04aed663361f](https://note.com/koushikagawa/n/n04aed663361f)
 
 ![GAS](images/GASfile.png "GAS project")
@@ -142,9 +143,9 @@ function doPost(e) {
 }
 ```
 
-できたらデプロイを押して新しいデプロイを選択します。
-種類はウェブアプリ
-説明文は無くても大丈夫です。
+できたらデプロイを押して新しいデプロイを選択します。  
+種類はウェブアプリ  
+説明文は無くても大丈夫です。  
 次のユーザーとして実行は自分を選び、アクセスできるユーザーは全員にします。
 
 後でウェブアプリのURLを使います。デプロイを管理からもコピーしにいけます。
@@ -153,18 +154,18 @@ function doPost(e) {
 
 openAiのAPIを使うためにkeyを取得します。
 
-こちらでCreate new secret keyを押すと生成できます。
+こちらでCreate new secret keyを押すと生成できます。  
 [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)
 
-![openAikey](images/openAiKey.png "API key")
+![openAikey](images/openAiKey.png "API key")  
 keyは後で使います。
 
 ### サーバー側準備
 
-Callbackを受けるサーバー側の準備をしていきます。
+Callbackを受けるサーバー側の準備をしていきます。  
 .htaccessはサーバーの構成に合わせて適宜作成してください。
 
-このページからindex.phpを使用するので、コピペでもダウンロードでもいいのでサーバーの中に用意してください。
+このページからindex.phpを使用するので、コピペでもダウンロードでもいいのでサーバーの中に用意してください。  
 [https://github.com/MAIGOMAIGO/LINEWORKS-chatGPT](https://github.com/MAIGOMAIGO/LINEWORKS-chatGPT)
 
 index.phpを入れる場所はpost通信が通る場所において下さい。一緒にprivate_XXXXXXXXXXXXXX.keyも入れて下さい。一緒が嫌ならindex.phpからpathを指定して参照出来るところにしてください。
