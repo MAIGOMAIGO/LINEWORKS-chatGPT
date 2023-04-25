@@ -1,5 +1,4 @@
 # LINEWORKS × chatGPT
----
 
 ## 目次
 
@@ -16,9 +15,11 @@
     - [サーバー側準備](#サーバー側準備)
   - [使用方法](#使用方法)
   - [テスト方法](#テスト方法)
+    - [get\_token.php](#get_tokenphp)
+    - [yamabiko.php](#yamabikophp)
+    - [trance\_lang.php](#trance_langphp)
+    - [reqGPT.php](#reqgptphp)
   - [参考資料](#参考資料)
-
----
 
 ## 概要
 
@@ -103,8 +104,8 @@ LINEWORKS Developer Console の botページ
 - CallbackはOn メッセージタイプはテキストだけ選択。  
 - 複数人のトークルームに招待可にチェックをつける。  
 - 管理者の主担当に自分を検索して追加する。  
-全部できたら保存。  
 
+全部できたら保存。  
 Bot IDは後で使います。
 
 つぎはLINEWORKSにbotを招待します。
@@ -211,11 +212,69 @@ $JWTHeaderEnc = base64_encode($JWTHeader);
 
 ## 使用方法
 
-まだ未完成
+LINEWORKSのトーク画面でbotがいる部屋でコメントします。botが直接会話してくれます。  
+![tolkbot](images/tolkbot.png "tolking bot")
 
 ## テスト方法
 
-まだ未完成
+このテストではcurlコマンドを多く使います。LinuxとWindowsで使い方が一部違うので注意してください。  
+私はWindows10のコマンドプロンプトから行っています。
+
+説明に使用するファイルはすべてindex.phpと同じところにおいています。
+
+### get_token.php
+
+get_token.phpはJWTを作成してAccessTokenをとりに行きます。これがないとLINEWORKSのbotはコメントできません。
+
+get_token.phpを一部修正します。
+
+```php
+<?php
+$client_id='<Client ID>'; // Client ID
+$client_secret='<Client secret ID>'; // Client secret ID
+$service_account='<Service Account ID>'; // Service Account ID
+$private_key_path='<Private Key Path>'; // Private Key Path
+
+// crate JWT Header
+$JWTHeader = '{"alg":"RS256","typ":"JWT"}';
+$JWTHeaderEnc = base64_encode($JWTHeader);
+
+//以下略
+```
+
+それぞれ適したものに直してください。サーバー側準備のindex.phpと修正は一緒です。
+
+修正できたら試しに起動してみます。コマンドプロンプトを開いて以下のコマンドを入力します。  
+URLはget_token.phpを指すものに直してください。
+
+```cmd
+curl -X POST <URL>.get_token,php
+```
+
+何もかえって来ないで終了したらget_token.phpのディレクトリを見てください。  
+token.jsonが増えていて中身が以下のようになっていればOKです。
+
+```json
+{
+    "access_token":"jp1AAABFNKyxc7xsVRQVKrTNFchiiMkQrfJMDM6whobYxfbO4fsF23mvuxRvSuMY57DG4uPI/NI4eNMSt8sroqpqFhe3HemLI3OvCar5FFfOQdqUBgqFA/MaHZVXHqsNJgoX7KaGwDTum+zhEyfwjGSrrJZfSoRpTHHrwny4F4UDEA1Lep3dVUUUKAIQHcq0TwCjiWkMnJAXMEFFfbdVzH3FCv+kpb2OH1NbYzL376fXLh3vMUlyRBXPTf3Lv0bK5NsvjR3BNMR3GSvVzjM59lR5ctBK8PvtTdmaHbVGXzJBHv+S3mp1UuD0szSuxCsWUrdCS7/PiWbQwM4++k+WM/bta5EB9v9s9YQGlyklE3fqhnYLGx/9jWanFgrvptCambOW8lv5A==",
+    "refresh_token":"jp1AAAAVq8kTeVPKkD11iLMP1mTqzYOd2T/r2x6QoBM2P3D8X6FfDi9wG5Hepsmh/LVpo3n3d/jcP/rnhtEw1VOpU4MJnxHVzu1x5VhKRmG/o63HERu2bnMtFHQVsjhljcf5fpm+Q==",
+    "scope": "bot",
+    "token_type": "Bearer",
+    "expires_in": 86400,
+    "created_at":1682411629,
+    "expire_at":1682498029
+}
+```
+
+errorなどがあればそちらを修正して上記のようなjsonファイルが生成されるようにしてください。  
+get_token作成は以下のURLを参考にしました。  
+[https://developers.worksmobile.com/jp/reference/authorization-sa?lang=ja&manageDomainId=400248896](https://developers.worksmobile.com/jp/reference/authorization-sa?lang=ja&manageDomainId=400248896)
+
+### yamabiko.php
+
+### trance_lang.php
+
+### reqGPT.php
 
 ## 参考資料
 
