@@ -247,8 +247,8 @@ $JWTHeaderEnc = base64_encode($JWTHeader);
 修正できたら試しに起動してみます。コマンドプロンプトを開いて以下のコマンドを入力します。  
 URLはget_token.phpを指すものに直してください。
 
-```cmd
-curl -X POST <URL>.get_token,php
+```sh
+curl -X POST <URL>
 ```
 
 何もかえって来ないで終了したらget_token.phpのディレクトリを見てください。  
@@ -271,6 +271,51 @@ get_token作成は以下のURLを参考にしました。
 [https://developers.worksmobile.com/jp/reference/authorization-sa?lang=ja&manageDomainId=400248896](https://developers.worksmobile.com/jp/reference/authorization-sa?lang=ja&manageDomainId=400248896)
 
 ### yamabiko.php
+
+yamabiko.phpはLINEWORKSのbotにコメントさせるためのプログラムです。  
+index.phpだった頃に受けたメッセージをそのまま返すためやまびこという名前になっています。  
+botがコメントさせたいトークルームに入っている前提なので、入っていないトークルームコメントさせようとしないでください。  
+get_token.phpと同じことが最初に行われているので、そちらが成功することを確認した上で動作させてください。
+
+使うためにyamabiko.phpを編集します。編集はサーバー側準備のindex.phpと同じです。
+
+```php
+<?php
+//  get raw data from the request 
+$json = file_get_contents('php://input');
+// Converts json data into a PHP object 
+$data = json_decode($json, true);
+
+$client_id='<Client ID>'; // Client ID
+$client_secret='<Client secret ID>'; // Client secret ID
+$service_account='<Service Account ID>'; // Service Account ID
+$private_key_path='<Private Key Path>'; // Private Key Path
+$botId = '<Bot ID>'; // Bot ID
+$userId = '<default User ID>'; // default User ID
+
+// crate JWT Header
+$JWTHeader = '{"alg":"RS256","typ":"JWT"}';
+$JWTHeaderEnc = base64_encode($JWTHeader);
+
+//以下略
+```
+
+修正できたら起動してみます。   
+channelIdはbotにコメントさせたいトークルームのチャンネルIDからコピペしてください。  
+messageはbotにコメントさせたい文字列です。  
+URLはyamabiko.phpを指すものにしてください。
+
+```sh
+curl -X POST ^
+-H "Content-Type: application/json" ^
+-d "{\"type\":\"message\",\"source\":{\"channelId\":\"<channelId>\"},\"content\":{\"type\":\"text\",\"text\":\"<message>\"}}" ^
+<URL>
+```
+
+レスポンスでError(201)と出ますが、channelIdのトークルームを見に行ってbotからコメントされていれば成功です。
+
+yamabiko.phpはこちらを参考に作成しました。  
+[https://developers.worksmobile.com/jp/reference/bot-channel-message-send?lang=ja](https://developers.worksmobile.com/jp/reference/bot-channel-message-send?lang=ja)
 
 ### trance_lang.php
 
