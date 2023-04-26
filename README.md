@@ -24,8 +24,8 @@
 
 ## 概要
 
-LINEWORKSとchatGPTの連携を試してみた。  
-LINEWORKSのbotを利用してchatGPTをLINEWORKSで使えるようにした。
+LINEWORKSとchatGPTの連携を試しどこまで使えるかを見てみようと考えました。  
+なのでLINEWORKSのbotを利用してchatGPTをLINEWORKSで使えるようにし、会話を行うことができるようにしてみました。
 
 ## 環境
 
@@ -221,7 +221,7 @@ LINEWORKSのトーク画面でbotがいる部屋でコメントします。bot�
 このテストではcurlコマンドを多く使います。LinuxとWindowsで使い方が一部違うので注意してください。  
 私はWindows10のコマンドプロンプトから行っています。
 
-説明に使用するファイルはすべてindex.phpと同じところにおいています。
+説明に使用するファイルはすべてindex.phpと同じディレクトリにおいています。
 
 ### get_token.php
 
@@ -354,7 +354,32 @@ Google翻訳そのままなので送った文字を英語にして、日本語�
 
 ### reqGPT.php
 
-編集中
+reqGPT.phpはchatGPTに質問を投げるプログラムです。  
+web上で行えるchatGPTとあまり変わりません。日本語で投げても大丈夫です。しかし、Tokenが使われるので試しすぎないよう気を付けてください。  
+
+reqGPTを編集します。編集はサーバー側準備のindex.phpと同じです。  
+
+```php
+<?php
+// message
+$question = $_POST['msg'];
+// open Ai API key
+$OPENAI_API_KEY = "<open Ai API key>";
+
+//以下略
+```
+
+編集したら動作させてみます。messageは自由に変えてください。  
+URLはreqGPT.phpを指すものにしてください。  
+
+```cmd
+curl -X POST -d "msg=<message>" <URL>
+```
+
+ちょっとレスポンスまで時間がかかりますが、chatGPTのメッセージが返ってきたら大丈夫です。  
+reqGPTは以下を参考に作りました。  
+【ChatGPT開発】ChatGPTのAPIをPHPから使うには？文章が返ってこない場合は？  
+[https://www.kyoukasho.net/entry/chatgpt-php](https://www.kyoukasho.net/entry/chatgpt-php)  
 
 ### index.php
 
@@ -370,5 +395,3 @@ Google翻訳そのままなので送った文字を英語にして、日本語�
 [https://developers.worksmobile.com/jp/reference/bot?lang=ja](https://developers.worksmobile.com/jp/reference/bot?lang=ja)  
 - Google翻訳APIを無料で作る方法   
 [https://qiita.com/satto_sann/items/be4177360a0bc3691fdf](https://qiita.com/satto_sann/items/be4177360a0bc3691fdf)  
-- 【ChatGPT開発】ChatGPTのAPIをPHPから使うには？文章が返ってこない場合は？  
-[https://www.kyoukasho.net/entry/chatgpt-php](https://www.kyoukasho.net/entry/chatgpt-php)  
