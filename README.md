@@ -19,6 +19,7 @@
     - [yamabiko.php](#yamabikophp)
     - [trance\_lang.php](#trance_langphp)
     - [reqGPT.php](#reqgptphp)
+    - [index.php](#indexphp)
   - [参考資料](#参考資料)
 
 ## 概要
@@ -319,13 +320,55 @@ yamabiko.phpはこちらを参考に作成しました。
 
 ### trance_lang.php
 
+trance_lang.phpは与えられた日本語を英語にして再度日本語にするプログラムです。  
+chatGPTにそのまま日本語で質問するとTokenがかなり消費されます。  
+同じ質問なら英語のが節約できるのでこのような作りになっています。  
+
+GASにpostするのでこのテストでは既にGASの準備ができている前提です。  
+ではtrance_lang.phpを編集します。編集はサーバー側準備のindex.phpと同じです。
+
+```php
+<?php
+// chatGPTに聞くために日本語を英語に直す
+$trance_url = '<GASのwebアプリケーションURL>';// GASのwebアプリケーションURL
+$msg = $_POST['msg']; // message
+$trance_data = json_encode(array(
+    'sl' => 'ja', // source language
+    'tl' => 'en', // trance language
+    'text' => $msg
+));
+//以下略
+```
+
+出来たらポストでメッセージを投げます。messageの部分は自由に変えて試して見てください。  
+URLにはtrance_lang.phpを指すものにしてください。
+
+```cmd
+curl -X POST -d "msg=<message>" <URL>
+```
+
+送信した文章が日本語っぽく帰ってきたら成功です。  
+messageの例として「壊れそうなものばかり集めてしまうよ　輝きは飾りじゃないガラスの十代」  
+と送ると「壊れそうなものばかり集める 輝きは飾りじゃない」と返ってきました。  
+Google翻訳そのままなので送った文字を英語にして、日本語にした時と同じのが帰ってくると思います。
+
 ### reqGPT.php
+
+編集中
+
+### index.php
+
+編集中
 
 ## 参考資料
 
-- 導入方法のbot作成に参考にしたURL
-[https://qiita.com/mmclsntr/items/eee8d8f3546410fe6652](https://qiita.com/mmclsntr/items/eee8d8f3546410fe6652)
-- LINEWORKS Developer APIの利用
-[https://developers.worksmobile.com/jp/reference/client-app?lang=ja](https://developers.worksmobile.com/jp/reference/client-app?lang=ja)
-- LINEWORKS Developer Bot
-[https://developers.worksmobile.com/jp/reference/bot?lang=ja](https://developers.worksmobile.com/jp/reference/bot?lang=ja)
+- 【LINE WORKS】LINE WORKS API 2.0をPostmanで手っ取り早く試してみる【サンプルあり】  
+[https://qiita.com/mmclsntr/items/eee8d8f3546410fe6652](https://qiita.com/mmclsntr/items/eee8d8f3546410fe6652)  
+- LINEWORKS Developer APIの利用  
+[https://developers.worksmobile.com/jp/reference/client-app?lang=ja](https://developers.worksmobile.com/jp/reference/client-app?lang=ja)  
+- LINEWORKS Developer Bot  
+[https://developers.worksmobile.com/jp/reference/bot?lang=ja](https://developers.worksmobile.com/jp/reference/bot?lang=ja)  
+- Google翻訳APIを無料で作る方法   
+[https://qiita.com/satto_sann/items/be4177360a0bc3691fdf](https://qiita.com/satto_sann/items/be4177360a0bc3691fdf)  
+- 【ChatGPT開発】ChatGPTのAPIをPHPから使うには？文章が返ってこない場合は？  
+[https://www.kyoukasho.net/entry/chatgpt-php](https://www.kyoukasho.net/entry/chatgpt-php)  
